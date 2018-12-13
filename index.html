@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Giphy API</title>
+</head>
+
+<body>
+
+  <div class="container">
+    <h1>Animal Search</h1>
+
+    <div id ="buttons-view"></div>
+    <form id="animal-form">
+        <label for="animal-input">Add an Animal!</label>
+        <input type="text" id="animal-input">
+        <br>
+  
+        <input id="add-animal" type="submit" value="Add an Animal!">
+      </form>
+
+      <div id= "animals-view"></div>
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script type="text/javascript">
+    var animals = ["Dog", "Cat", "Bird", "Horse", "Fish"];
+    function displayAnimalInfo() {
+      var animal = $(this).attr("data-name");
+      var queryURL = "https://api.giphy.com/v1/gifs/search?api_key=m24wOx1shF88Z3Im8EwSiRWKgVJPifBF&limit=10&q=" + animal;
+      $.ajax({
+          url: queryURL,
+          method: "GET"
+        }).then(function(response) {
+          for (var i = 0; i < 10; i++) {
+          console.log(response);
+          console.log(response.data[i].rating)
+          console.log(response.data[i].embed_url)
+          var animalDiv = $("<div class = 'animal'>");
+          var rating = response.data[i].rating;
+          var pOne = $("<p>").text("Rating: " + rating);
+          animalDiv.append(pOne);
+          var imgURL = response.data[i].images.original.url;
+          var image = $("<img>").attr("src", imgURL);
+          animalDiv.append(image);
+          $("#animals-view").prepend(animalDiv);
+          }
+        });
+    }
+
+    function renderButtons() {
+      $("#buttons-view").empty();
+      for(var i = 0; i <animals.length; i++) {
+        var a = $('<button>');
+        a.addClass("animal-btn");
+        a.attr("data-name", animals[i]);
+        a.text(animals[i]);
+        $('#buttons-view').append(a);
+      }
+
+    }
+    
+    $("#add-animal").on("click",function (event) {
+      event.preventDefault();
+      var animal = $("#animal-input").val().trim();
+      animals.push(animal);
+      renderButtons();
+    })
+    $(document).on("click", ".animal-btn", displayAnimalInfo);
+    renderButtons();
+  </script>
+  </div>
+
+</body>
+
+</html>
